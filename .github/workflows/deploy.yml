@@ -55,8 +55,8 @@ jobs:
         cd backend
         # Create __init__.py in tests directory if it doesn't exist
         touch tests/__init__.py
-        # Run the tests
-        python -m pytest tests/test_main.py -v
+        # Run all the tests
+        python -m pytest
     
     - name: Set up Node.js
       uses: actions/setup-node@v3
