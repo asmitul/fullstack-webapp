@@ -25,8 +25,9 @@ jobs:
     - name: Run backend tests
       run: |
         cd backend
-        pytest
+        python -m pytest
       env:
+        PYTHONPATH: ${{ github.workspace }}/backend
         MONGODB_URI: mongodb://localhost:27017/taskmanager_test
         REDIS_HOST: localhost
         REDIS_PORT: 6379
