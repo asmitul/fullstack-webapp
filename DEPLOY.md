@@ -48,18 +48,6 @@ usermod -aG docker deploy
 
 You have two options for generating SSH keys:
 
-### Option 1: Generate on your local machine (Recommended)
-
-On your local machine (not the VPS):
-
-```bash
-# Generate SSH key pair
-ssh-keygen -t ed25519 -C "github-actions-deploy"
-
-# Copy the public key to your VPS
-cat ~/.ssh/id_ed25519.pub | ssh deploy@your-vps-ip "mkdir -p ~/.ssh && chmod 700 ~/.ssh && cat >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
-```
-
 ### Option 2: Generate on your VPS
 
 On your VPS:

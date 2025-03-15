@@ -4,7 +4,7 @@
 
 - [x] Fix MongoDB connection issue in Docker Compose
 - [x] Fix user authentication with JWT tokens
-- [ ] Update JWT secret to a strong, random value for production
+- [x] Update JWT secret to a strong, random value for production
 - [ ] Add proper error handling for API endpoints
 - [ ] Implement input validation for all API endpoints
 - [ ] Add pagination for task listing endpoint

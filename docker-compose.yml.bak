@@ -12,7 +12,7 @@ services:
       - MONGODB_URI=mongodb://mongodb:27017/taskmanager
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - JWT_SECRET=D20MD3AGT9Firs82PlnRsoUQO3zf6G940pwPYeYBFQP4u1k6ysflRy4o6c
+      - JWT_SECRET=your-secret-key
       - ACCESS_TOKEN_EXPIRE_MINUTES=60
       - CORS_ORIGINS=["http://localhost:3000"]
     depends_on:
