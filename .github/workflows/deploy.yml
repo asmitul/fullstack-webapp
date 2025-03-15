@@ -8,6 +8,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
     
+    services:
+      mongodb:
+        image: mongo:6.0
+        ports:
+          - 27017:27017
+      
+      redis:
+        image: redis:7.0
+        ports:
+          - 6379:6379
+    
     steps:
     - uses: actions/checkout@v3
     
@@ -25,9 +36,13 @@ jobs:
     - name: Run backend tests
       run: |
         cd backend
-        python -m pytest
+        # Create a simple __init__.py file in the tests directory to make it a proper package
+        touch tests/__init__.py
+        # Add the current directory to PYTHONPATH
+        export PYTHONPATH=$PYTHONPATH:$(pwd)
+        # Run pytest with verbose output
+        python -m pytest -v
       env:
-        PYTHONPATH: ${{ github.workspace }}/backend
         MONGODB_URI: mongodb://localhost:27017/taskmanager_test
         REDIS_HOST: localhost
         REDIS_PORT: 6379
