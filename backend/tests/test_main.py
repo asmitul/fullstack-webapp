@@ -1,10 +1,8 @@
+import pytest
 from fastapi.testclient import TestClient
 
-from main import app
-
-client = TestClient(app)
-
-def test_read_root():
-    response = client.get("/")
+def test_read_root(test_client: TestClient):
+    """Test the root endpoint."""
+    response = test_client.get("/api/v1")
     assert response.status_code == 200
     assert response.json() == {"message": "Welcome to Task Management API"} 
