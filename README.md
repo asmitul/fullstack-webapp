@@ -164,6 +164,8 @@ The API documentation is available at http://localhost:8000/docs when the applic
 
 The application can be deployed to a VPS using GitHub Actions. The workflow is defined in `.github/workflows/deploy.yml`.
 
+For detailed deployment instructions, please refer to the [Deployment Guide](DEPLOY.md).
+
 To set up deployment, you need to add the following secrets to your GitHub repository:
 
 - `SSH_PRIVATE_KEY`: SSH private key for accessing the VPS
