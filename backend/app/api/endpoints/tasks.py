@@ -160,7 +160,7 @@ async def update_task(
 async def delete_task(
     task_id: str,
     current_user: UserInDB = Depends(get_current_active_user),
-) -> Any:
+) -> None:
     """
     Delete a task.
     """
@@ -185,6 +185,4 @@ async def delete_task(
     
     # Invalidate caches
     delete_cache(f"task:{task_id}")
-    delete_cache(f"tasks:{current_user.id}")
-    
-    return None 
+    delete_cache(f"tasks:{current_user.id}") 

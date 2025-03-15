@@ -39,11 +39,72 @@ A fully containerized task management web application built with modern technolo
    ```bash
    docker-compose up -d
    ```
+   
+   Or use the setup script:
+   ```bash
+   ./setup.sh
+   ```
+   
+   Or use Make:
+   ```bash
+   make setup
+   ```
 
 3. Access the application:
    - Frontend: http://localhost:3000
    - Backend API: http://localhost:8000
    - API Documentation: http://localhost:8000/docs
+
+### Helper Scripts
+
+The project includes several helper scripts to make development easier:
+
+- **setup.sh**: Sets up the development environment and starts all containers
+  ```bash
+  ./setup.sh
+  ```
+
+- **dev.sh**: Development workflow script with various commands
+  ```bash
+  ./dev.sh [command]
+  ```
+  Available commands:
+  - `start`: Start all containers
+  - `stop`: Stop all containers
+  - `restart`: Restart all containers
+  - `logs`: Show logs from all containers
+  - `backend`: Show logs from backend container
+  - `frontend`: Show logs from frontend container
+  - `test`: Run backend tests
+  - `health`: Check the health of all services
+  - `help`: Show help message
+
+- **cleanup.sh**: Stops all containers and cleans up resources
+  ```bash
+  ./cleanup.sh
+  ```
+
+- **health-check.sh**: Checks the health of all services
+  ```bash
+  ./health-check.sh
+  ```
+
+- **Makefile**: Provides Make targets for common operations
+  ```bash
+  make [target]
+  ```
+  Available targets:
+  - `setup`: Set up the development environment and start all containers
+  - `start`: Start all containers
+  - `stop`: Stop all containers
+  - `restart`: Restart all containers
+  - `logs`: Show logs from all containers
+  - `backend-logs`: Show logs from backend container
+  - `frontend-logs`: Show logs from frontend container
+  - `test`: Run backend tests
+  - `health-check`: Check the health of all services
+  - `clean`: Stop all containers and clean up resources
+  - `help`: Show help message
 
 ### Development Workflow
 
@@ -66,6 +127,18 @@ To run the backend tests:
 
 ```bash
 docker-compose exec backend pytest
+```
+
+Or use the dev script:
+
+```bash
+./dev.sh test
+```
+
+Or use Make:
+
+```bash
+make test
 ```
 
 #### Frontend Development
@@ -108,7 +181,62 @@ To set up deployment, you need to add the following secrets to your GitHub repos
 ├── mongodb/            # MongoDB data and configuration
 ├── redis/              # Redis data and configuration
 ├── docker-compose.yml  # Docker Compose configuration
-└── .github/            # GitHub Actions workflows
+├── .github/            # GitHub Actions workflows
+├── setup.sh            # Setup script
+├── dev.sh              # Development workflow script
+├── cleanup.sh          # Cleanup script
+├── health-check.sh     # Health check script
+└── Makefile            # Make targets for common operations
+```
+
+## Troubleshooting
+
+### Backend API Not Accessible
+
+If the backend API at http://localhost:8000 is not accessible:
+
+1. Check if the backend container is running:
+   ```bash
+   docker-compose ps
+   ```
+
+2. Check the backend logs for errors:
+   ```bash
+   docker-compose logs backend
+   ```
+
+3. Common issues:
+   - **Missing email-validator package**: If you see an error about `email_validator` module, install it:
+     ```bash
+     docker-compose exec backend pip install email-validator
+     docker-compose restart backend
+     ```
+   - **Port conflict**: Make sure no other service is using port 8000
+   - **Database connection issues**: Check if MongoDB is running and accessible
+
+### Frontend Issues
+
+If the frontend at http://localhost:3000 has issues:
+
+1. Check if the frontend container is running:
+   ```bash
+   docker-compose ps
+   ```
+
+2. Check the frontend logs for errors:
+   ```bash
+   docker-compose logs frontend
+   ```
+
+3. Common issues:
+   - **TypeScript errors**: Make sure all required type definitions are installed
+   - **API connection errors**: Verify that the backend API is accessible
+
+### Health Check
+
+Run the health check script to verify all services are running properly:
+```bash
+./health-check.sh
 ```
 
 ## License
