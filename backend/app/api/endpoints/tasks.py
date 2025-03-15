@@ -47,12 +47,12 @@ async def create_task(
     Create a new task.
     """
     task = TaskInDB(
-        **task_in.dict(),
+        **task_in.model_dump(),
         user_id=current_user.id,
     )
     
     # Insert task into database
-    result = await db.db.tasks.insert_one(task.dict(exclude={"id"}))
+    result = await db.db.tasks.insert_one(task.model_dump(exclude={"id"}))
     
     # Update task with the generated ID
     task.id = str(result.inserted_id)
@@ -136,7 +136,7 @@ async def update_task(
         )
     
     # Update the task
-    update_data = task_in.dict(exclude_unset=True)
+    update_data = task_in.model_dump(exclude_unset=True)
     
     # Add updated_at timestamp
     from datetime import datetime

@@ -6,7 +6,7 @@ pytestmark = pytest.mark.asyncio
 async def get_auth_token(async_client: AsyncClient) -> str:
     # Register a user
     await async_client.post(
-        "/api/v1/auth/register",
+        "/auth/register",
         json={
             "email": "tasks@example.com",
             "username": "tasksuser",
@@ -16,7 +16,7 @@ async def get_auth_token(async_client: AsyncClient) -> str:
     
     # Login to get token
     response = await async_client.post(
-        "/api/v1/auth/login",
+        "/auth/login",
         data={
             "username": "tasksuser",
             "password": "password123"
@@ -31,7 +31,7 @@ async def test_create_task(async_client: AsyncClient):
     
     # Create a task
     response = await async_client.post(
-        "/api/v1/tasks",
+        "/tasks",
         json={
             "title": "Test Task",
             "description": "This is a test task",
@@ -54,7 +54,7 @@ async def test_get_tasks(async_client: AsyncClient):
     
     # Create a task first
     await async_client.post(
-        "/api/v1/tasks",
+        "/tasks",
         json={
             "title": "Task for Get Test",
             "description": "This is a task for testing get endpoint",
@@ -66,7 +66,7 @@ async def test_get_tasks(async_client: AsyncClient):
     
     # Get all tasks
     response = await async_client.get(
-        "/api/v1/tasks",
+        "/tasks",
         headers={"Authorization": f"Bearer {token}"}
     )
     assert response.status_code == 200
@@ -80,7 +80,7 @@ async def test_update_task(async_client: AsyncClient):
     
     # Create a task first
     create_response = await async_client.post(
-        "/api/v1/tasks",
+        "/tasks",
         json={
             "title": "Task to Update",
             "description": "This task will be updated",
@@ -93,7 +93,7 @@ async def test_update_task(async_client: AsyncClient):
     
     # Update the task
     response = await async_client.put(
-        f"/api/v1/tasks/{task_id}",
+        f"/tasks/{task_id}",
         json={
             "title": "Updated Task",
             "status": "in_progress"
@@ -111,7 +111,7 @@ async def test_delete_task(async_client: AsyncClient):
     
     # Create a task first
     create_response = await async_client.post(
-        "/api/v1/tasks",
+        "/tasks",
         json={
             "title": "Task to Delete",
             "description": "This task will be deleted",
@@ -124,14 +124,14 @@ async def test_delete_task(async_client: AsyncClient):
     
     # Delete the task
     response = await async_client.delete(
-        f"/api/v1/tasks/{task_id}",
+        f"/tasks/{task_id}",
         headers={"Authorization": f"Bearer {token}"}
     )
     assert response.status_code == 204
     
     # Verify task is deleted
     get_response = await async_client.get(
-        f"/api/v1/tasks/{task_id}",
+        f"/tasks/{task_id}",
         headers={"Authorization": f"Bearer {token}"}
     )
     assert get_response.status_code == 404 

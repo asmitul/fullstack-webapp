@@ -11,6 +11,7 @@ from fastapi.testclient import TestClient
 from httpx import AsyncClient
 from motor.motor_asyncio import AsyncIOMotorClient
 
+from app.core.config import settings
 from app.db.mongodb import db
 from main import app
 
@@ -27,7 +28,9 @@ def test_client() -> Generator:
 
 @pytest.fixture
 async def async_client() -> AsyncGenerator:
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    # Use the correct base_url that includes the API version prefix
+    base_url = "http://test"
+    async with AsyncClient(app=app, base_url=base_url) as ac:
         yield ac
 
 @pytest.fixture(autouse=True, scope="function")
