@@ -34,7 +34,7 @@ async def register(user_in: UserCreate) -> Any:
         )
     
     # Create new user
-    user_dict = user_in.dict()
+    user_dict = user_in.model_dump()
     hashed_password = get_password_hash(user_dict.pop("password"))
     
     user_db = UserInDB(
@@ -43,7 +43,7 @@ async def register(user_in: UserCreate) -> Any:
     )
     
     # Insert user into database
-    result = await db.db.users.insert_one(user_db.dict(exclude={"id"}))
+    result = await db.db.users.insert_one(user_db.model_dump(exclude={"id"}))
     
     # Update user with the generated ID
     user_db.id = str(result.inserted_id)

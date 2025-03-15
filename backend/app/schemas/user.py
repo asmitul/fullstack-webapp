@@ -15,6 +15,7 @@ class UserCreate(UserBase):
     email: EmailStr
     username: str
     password: str
+    disabled: bool = False
 
 # Properties to receive via API on update
 class UserUpdate(UserBase):
