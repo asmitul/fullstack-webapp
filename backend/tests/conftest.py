@@ -25,10 +25,10 @@ def test_client() -> Generator:
     with TestClient(app) as client:
         yield client
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 async def async_client() -> AsyncGenerator:
-    async with AsyncClient(app=app, base_url="http://test") as client:
-        yield client
+    async with AsyncClient(app=app, base_url="http://test") as ac:
+        yield ac
 
 @pytest.fixture(autouse=True, scope="function")
 async def setup_db() -> AsyncGenerator:

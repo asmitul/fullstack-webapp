@@ -27,11 +27,28 @@ jobs:
       with:
         python-version: '3.11'
     
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y netcat-openbsd
+    
     - name: Install backend dependencies
       run: |
         cd backend
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+    
+    - name: Wait for MongoDB and Redis
+      run: |
+        # Wait for MongoDB to be ready
+        echo "Waiting for MongoDB to be ready..."
+        timeout 60 bash -c 'until nc -z localhost 27017; do sleep 1; done'
+        
+        # Wait for Redis to be ready
+        echo "Waiting for Redis to be ready..."
+        timeout 60 bash -c 'until nc -z localhost 6379; do sleep 1; done'
+        
+        echo "Services are ready!"
     
     - name: Run backend tests
       run: |
