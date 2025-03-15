@@ -5,12 +5,14 @@ services:
       context: ./backend
     ports:
       - "8000:8000"
+      - "8002:8002"  # For health check app
     volumes:
       - ./backend:/app
     environment:
-      - MONGODB_URL=mongodb://mongodb:27017/taskdb
-      - REDIS_URL=redis://redis:6379/0
-      - SECRET_KEY=your-secret-key
+      - MONGODB_URI=mongodb://mongodb:27017/taskmanager
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=your-secret-key
       - ACCESS_TOKEN_EXPIRE_MINUTES=60
       - CORS_ORIGINS=["http://localhost:3000"]
     depends_on:

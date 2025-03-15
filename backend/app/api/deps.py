@@ -1,4 +1,5 @@
 from typing import Generator, Optional
+from bson import ObjectId
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -27,9 +28,17 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserInDB:
             detail="Could not validate credentials",
         )
     
-    user = await db.db.users.find_one({"_id": token_data.sub})
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+    try:
+        # Convert the string ID to ObjectId
+        object_id = ObjectId(token_data.sub)
+        user = await db.db.users.find_one({"_id": object_id})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+    except Exception as e:
+        raise HTTPException(
+            status_code=404, 
+            detail=f"User not found. Error: {str(e)}"
+        )
     
     return UserInDB(**user)
 
