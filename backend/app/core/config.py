@@ -18,12 +18,17 @@ class Settings(BaseSettings):
     # Redis Settings
     REDIS_HOST: str = os.getenv("REDIS_HOST", "localhost")
     REDIS_PORT: int = int(os.getenv("REDIS_PORT", "6379"))
+
+    VPS_HOST: str = os.getenv("VPS_HOST", "localhost")
     
     # CORS Settings
     CORS_ORIGINS: List[str] = [
         "http://localhost",
         "http://localhost:3000",
         "http://localhost:8000",
+        f"http://{VPS_HOST}",
+        f"http://{VPS_HOST}:3000",
+        f"http://{VPS_HOST}:8000",
     ]
     
     class Config:

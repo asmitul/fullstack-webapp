@@ -1,4 +1,5 @@
 import apiClient from './client';
+import Cookies from 'js-cookie';
 
 export interface LoginCredentials {
   username: string;
@@ -36,9 +37,14 @@ export const login = async (credentials: LoginCredentials): Promise<AuthResponse
     },
   });
   
-  // Store the token in localStorage
+  // Store the token in cookies
   if (response.data.access_token) {
-    localStorage.setItem('token', response.data.access_token);
+    Cookies.set('token', response.data.access_token, { 
+      expires: 7, // 7 days
+      path: '/',
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict'
+    });
   }
   
   return response.data;
@@ -55,5 +61,5 @@ export const getCurrentUser = async (): Promise<User> => {
 };
 
 export const logout = (): void => {
-  localStorage.removeItem('token');
+  Cookies.remove('token', { path: '/' });
 }; 

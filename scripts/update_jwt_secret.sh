@@ -2,6 +2,7 @@
 
 # Script to update JWT secret to a strong, random value
 # This addresses a high-priority security task from the TODO list
+# usages: ./scripts/update_jwt_secret.sh
 
 set -e  # Exit on any error
 

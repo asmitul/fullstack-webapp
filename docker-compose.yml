@@ -4,17 +4,17 @@ services:
     build:
       context: ./backend
     ports:
-      - "8000:8000"
+      - "8000:8000"  # Main backend port
       - "8002:8002"  # For health check app
     volumes:
       - ./backend:/app
     environment:
-      - MONGODB_URI=mongodb://mongodb:27017/taskmanager
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - JWT_SECRET=D20MD3AGT9Firs82PlnRsoUQO3zf6G940pwPYeYBFQP4u1k6ysflRy4o6c
+      - MONGODB_URI=${MONGODB_URI}  # Use variable from .env
+      - REDIS_HOST=${REDIS_HOST}    # Use variable from .env
+      - REDIS_PORT=${REDIS_PORT}    # Use variable from .env
+      - JWT_SECRET=${JWT_SECRET}    # Use variable from .env
       - ACCESS_TOKEN_EXPIRE_MINUTES=60
-      - CORS_ORIGINS=["http://localhost:3000"]
+      - CORS_ORIGINS=["http://localhost:3000", "http://${VPS_HOST}", "https://${VPS_HOST}"]  # Allow production host
     depends_on:
       - mongodb
       - redis
@@ -32,7 +32,7 @@ services:
       - ./frontend:/app
       - /app/node_modules
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost/api
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}  # Use variable for production API URL
     depends_on:
       - backend
     networks:
@@ -83,4 +83,4 @@ volumes:
 
 networks:
   app-network:
-    driver: bridge 
+    driver: bridge

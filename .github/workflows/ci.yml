@@ -43,7 +43,7 @@ jobs:
         MONGODB_URI: mongodb://localhost:27017/taskmanager_test
         REDIS_HOST: localhost
         REDIS_PORT: 6379
-        JWT_SECRET: test_secret_key
+        JWT_SECRET: D20MD3AGT9Firs82PlnRsoUQO3zf6G940pwPYeYBFQP4u1k6ysflRy4o6c
   
   frontend-tests:
     runs-on: ubuntu-latest

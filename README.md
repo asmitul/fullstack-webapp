@@ -1,4 +1,4 @@
-# Task Management Web Application 
+# Task Management Web Application
 
 A fully containerized task management web application built with modern technologies.
 

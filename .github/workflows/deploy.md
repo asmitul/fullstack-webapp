@@ -1,43 +1,98 @@
-You can generate the SSH key pair either on your local machine or on your VPS. Let me explain both approaches:
+# Deployment Guide for Task Management Web Application
 
-## Option 2: Generate SSH key pair on your VPS
+This guide will walk you through deploying the Task Management Web Application to a Virtual Private Server (VPS).
 
-If you prefer to generate the keys directly on your VPS:
+## Prerequisites
 
-1. SSH into your VPS:
-   ```bash
-   ssh username@your-vps-ip
-   ```
+- A VPS with SSH access (Ubuntu 20.04 or newer recommended)
+- Domain name (optional, but recommended)
+- GitHub account with your repository
 
-2. Generate the SSH key pair:
-   ```bash
-   ssh-keygen -t ed25519 -C "github-actions-deploy"
-   ```
+## 1. Initial VPS Setup
 
-3. Follow the prompts as described above
+### SSH into your VPS
 
-4. Add the public key to the authorized_keys file:
-   ```bash
-   cat ~/.ssh/id_ed25519.pub >> ~/.ssh/authorized_keys
-   ```
+```bash
+ssh root@your-vps-ip
+```
 
-5. Display the private key:
-   ```bash
-   cat ~/.ssh/id_ed25519
-   ```
+### Update the system
 
-6. Copy the entire output (including BEGIN and END lines) and add it as a GitHub secret named `SSH_PRIVATE_KEY`
+```bash
+apt update && apt upgrade -y
+```
 
-7. For security, consider removing the private key from your VPS after adding it to GitHub:
-   ```bash
-   rm ~/.ssh/id_ed25519
-   ```
+### Install required software
 
-## Important Security Considerations:
+```bash
+# Install Docker and Docker Compose
+apt install -y docker.io docker-compose git
 
-1. Never share your private key or commit it to your repository
-2. Use a dedicated key pair for GitHub Actions deployments
-3. Consider restricting the key's permissions on your VPS using the `authorized_keys` file options
-4. Regularly rotate your keys for enhanced security
+# Start and enable Docker
+systemctl start docker
+systemctl enable docker
+```
 
-Would you like me to provide more detailed instructions for either of these approaches?
+### Create a non-root user for deployment
+
+```bash
+# Create a new user
+adduser deploy
+
+# Add user to sudo and docker groups
+usermod -aG sudo deploy
+usermod -aG docker deploy
+```
+
+## 2. Set Up SSH Keys for GitHub Actions
+
+You have two options for generating SSH keys:
+
+### Option 2: Generate on your VPS
+
+On your VPS:
+
+```bash
+# Switch to the deploy user
+su - deploy
+
+# Generate SSH key pair
+ssh-keygen -t ed25519 -C "github-actions-deploy"
+
+# Add the public key to authorized_keys
+cat ~/.ssh/id_ed25519.pub >> ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+
+# Display the private key (copy this for GitHub)
+cat ~/.ssh/id_ed25519
+
+# Remove the private key from the server (for security)
+rm ~/.ssh/id_ed25519
+```
+
+## 3. Add Secrets to GitHub Repository
+
+1. Go to your GitHub repository
+2. Click on "Settings" > "Secrets and variables" > "Actions"
+3. Add the following secrets:
+   - `SSH_PRIVATE_KEY`: Your private key (entire content including BEGIN and END lines)
+   - `VPS_HOST`: Your VPS IP address
+   - `VPS_USER`: `deploy` (or whatever username you created)
+   - `VPS_PATH`: `/home/deploy/task-management-app`
+   - `JWT_SECRET` : 
+   - `MONGODB_URI` : `mongodb://mongodb:27017/taskdb`
+   - `NEXT_PUBLIC_API_URL` : `http://ip:8000`
+   - `REDIS_HOST` : `localhost`
+   - `REDIS_PORT` : `6379`
+
+## 4. Prepare the Application Directory
+
+On your VPS, as the deploy user:
+
+```bash
+# Switch to the deploy user
+su - deploy
+
+# Create application directory
+mkdir -p ~/task-management-app
+```

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -12,9 +13,9 @@ const apiClient = axios.create({
 // Add a request interceptor to include the auth token in requests
 apiClient.interceptors.request.use(
   (config) => {
-    // Get token from localStorage if we're in the browser
+    // Get token from cookies if we're in the browser
     if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('token');
+      const token = Cookies.get('token');
       if (token) {
         if (!config.headers) {
           config.headers = {};

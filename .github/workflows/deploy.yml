@@ -40,23 +40,22 @@ jobs:
     
     - name: Wait for MongoDB and Redis
       run: |
-        # Wait for MongoDB to be ready
         echo "Waiting for MongoDB to be ready..."
         timeout 60 bash -c 'until nc -z localhost 27017; do sleep 1; done'
-        
-        # Wait for Redis to be ready
         echo "Waiting for Redis to be ready..."
         timeout 60 bash -c 'until nc -z localhost 6379; do sleep 1; done'
-        
         echo "Services are ready!"
     
     - name: Run backend tests
       run: |
         cd backend
-        # Create __init__.py in tests directory if it doesn't exist
         touch tests/__init__.py
-        # Run all the tests
         python -m pytest
+      env:
+        MONGODB_URI: mongodb://localhost:27017/taskmanager_test
+        REDIS_HOST: localhost
+        REDIS_PORT: 6379
+        JWT_SECRET: D20MD3AGT9Firs82PlnRsoUQO3zf6G940pwPYeYBFQP4u1k6ysflRy4o6c
     
     - name: Set up Node.js
       uses: actions/setup-node@v3
@@ -94,9 +93,26 @@ jobs:
         ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
     
     - name: Deploy to VPS
+      env:
+        MONGODB_URI: ${{ secrets.MONGODB_URI }}  # Production MongoDB URI
+        REDIS_HOST: ${{ secrets.REDIS_HOST }}    # Production Redis host
+        REDIS_PORT: ${{ secrets.REDIS_PORT }}    # Production Redis port
+        JWT_SECRET: ${{ secrets.JWT_SECRET }}    # Production JWT secret
+        NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}  # Production API URL
+        VPS_HOST: ${{ secrets.VPS_HOST }}
       run: |
         ssh -o StrictHostKeyChecking=accept-new ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "mkdir -p ${{ secrets.VPS_PATH }}"
         ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cd ${{ secrets.VPS_PATH }} && git pull || git clone https://github.com/${{ github.repository }}.git ."
+        
+        # Create an .env file on the VPS with secrets
+        ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cd ${{ secrets.VPS_PATH }} && echo 'MONGODB_URI=$MONGODB_URI' > .env"
+        ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cd ${{ secrets.VPS_PATH }} && echo 'REDIS_HOST=$REDIS_HOST' >> .env"
+        ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cd ${{ secrets.VPS_PATH }} && echo 'REDIS_PORT=$REDIS_PORT' >> .env"
+        ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cd ${{ secrets.VPS_PATH }} && echo 'JWT_SECRET=$JWT_SECRET' >> .env"
+        ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cd ${{ secrets.VPS_PATH }} && echo 'NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL' >> .env"
+        ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cd ${{ secrets.VPS_PATH }} && echo 'VPS_HOST=$VPS_HOST' >> .env"
+        
+        # Run Docker Compose commands
         ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cd ${{ secrets.VPS_PATH }} && docker-compose down"
         ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cd ${{ secrets.VPS_PATH }} && docker-compose build"
-        ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cd ${{ secrets.VPS_PATH }} && docker-compose up -d" 
+        ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cd ${{ secrets.VPS_PATH }} && docker-compose up -d"
